@@ -1,0 +1,27 @@
+## Install Rust & Cargo using rustup
+
+# Remove previous rust versions
+
+sudo apt remove --purge rustc cargo
+
+sudo apt autoremove --purge
+
+
+# Open a terminal, then run:
+
+curl https://sh.rustup.rs -sSf | sh
+Press Enter
+
+
+# Activate Rust in your current terminal
+
+source $HOME/.cargo/env
+
+
+# Test
+
+rustc --version
+cargo --version
+
+
+
