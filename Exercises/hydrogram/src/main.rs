@@ -3,6 +3,12 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use chrono::NaiveDateTime;
 
+fn replace_missing(vec: Vec<f64>, missing_value: f64) -> Vec<Option<f64>> {
+    vec.into_iter()
+        .map(|v| if v == missing_value {None} else { Some(v) })
+        .collect()
+}
+
 fn main() -> PolarsResult<()> {
 
     let file = File::open("data/qc00156211.txt")?;
@@ -42,23 +48,33 @@ fn main() -> PolarsResult<()> {
         tmin_vec.push(tmin_value);
     };
 
+    // replace missing
+    let ppt_fix = replace_missing(ppt_vec, -99.9);
+    let tmax_fix = replace_missing(tmax_vec, -99.9);
+    let tmin_fix = replace_missing(tmin_vec, -99.9);
+
     // Create series
     let date_series = Series::new("date",date_vec).
         cast(&DataType::Datetime(TimeUnit::Milliseconds, None))?;
-    let ppt_series = Series::new("ppt", ppt_vec);
-    let tmax_series = Series::new("tmax",tmax_vec);
-    let tmin_series = Series::new("tmin",tmin_vec);
-
-    let tmax_fix = tmax_series
-        .apply(|v| if v == -99.9 { None } else { Some(v) }, GetOutput::Same)
-        .cast(&DateType::Float64)?;
-    let tmin_fix = tmin_series
-        .apply(|v| if v == -99.9 { None } else { Some(v) }, GetOutput::Same)
-        .cast(&DateType::Float64)?;
+    let ppt_series = Series::new("ppt", ppt_fix);
+    let tmax_series = Series::new("tmax",tmax_fix);
+    let tmin_series = Series::new("tmin",tmin_fix);
     
-    // // Build the DataFrame from series
-    let df = DataFrame::new(vec![date_series,ppt_series,tmax_fix,tmin_fix])?;
+    // Build the DataFrame from series
+    let df = DataFrame::new(vec![date_series,ppt_series,tmax_series,tmin_series])?;
 
     println!("{:?}", df.head(Some(5)));
+
+    // Explore the dataframe
+    println!("{:?}", df.schema());
+
+    // Get the mean value
+    let mean = df.column("ppt")?.f64()?.mean().unwrap();
+    println!("Mean: {:?}", mean);
+
+    //Get a quantile
+    let p90 = df.column("ppt")?.f64()?.quantile(0.9, QuantileInterpolOptions::Nearest)?.unwrap();
+    println!("90th percentile: {:?}", p90);
+
     Ok(())
 }
