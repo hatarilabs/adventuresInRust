@@ -11,7 +11,11 @@ wsl --install Ubuntu-22.04
 #Enter username: hatari password:labs
 
 # Clone the repository
+git clone https://github.com/hatarilabs/adventuresInRust.git
 
+# Update essential packages
+sudo apt update
+sudo apt install build-essential
 
 
 ## Install Rust & Cargo using rustup
