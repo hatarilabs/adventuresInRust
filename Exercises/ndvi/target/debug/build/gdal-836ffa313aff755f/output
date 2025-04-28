@@ -1,0 +1,15 @@
+GDAL version string: "3080400"
+cargo:rustc-cfg=gdal_3
+cargo:rustc-cfg=gdal_3_8
+cargo:rustc-cfg=major_is_3
+cargo:rustc-cfg=minor_is_8
+cargo:rustc-cfg=major_ge_3
+cargo:rustc-cfg=minor_ge_0
+cargo:rustc-cfg=minor_ge_1
+cargo:rustc-cfg=minor_ge_2
+cargo:rustc-cfg=minor_ge_3
+cargo:rustc-cfg=minor_ge_4
+cargo:rustc-cfg=minor_ge_5
+cargo:rustc-cfg=minor_ge_6
+cargo:rustc-cfg=minor_ge_7
+cargo:rustc-cfg=minor_ge_8
